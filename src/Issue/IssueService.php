@@ -282,6 +282,37 @@ class IssueService extends \JiraRestApi\JiraClient
     }
 
     /**
+     * Update a comment on an issue.
+     * 
+     * @param string|int $issueIdOrKey Issue id or key
+     * @param Comment|object $comment
+     * @param string|int $id           Comment id
+     * 
+     * @throws JiraException
+     * @throws \JsonMapper_Exception
+     * 
+     * @return Comment|object Comment class
+     */
+
+    public function updateComment($issueIdOrKey, $comment, $id)
+    {
+        $this->log->addInfo("updateComment=\n");
+
+        $data = json_encode($comment);
+        
+        $ret = $this->exec($this->uri."/$issueIdOrKey/comment/$id", $data, 'PUT');
+        
+        $ret_comment = $this->json_mapper->map(
+            json_decode($ret), new Comment()
+        );
+        
+        $this->log->addDebug('update comment ' .$issueIdOrKey. ' ' .$id. ' result='.var_export($ret, true));
+
+        return $ret_comment;
+    }
+
+
+    /**
      * Delete a comment on an issue.
      *
      * @param string|int $issueIdOrKey Issue id or key
